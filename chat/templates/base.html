@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MalGPT</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; }
+
+        /* ---- auth pages (signup/login) ---- */
+        .topbar {
+            background: linear-gradient(90deg, #1a1a2e 0%, #16213e 100%);
+            color: white; padding: 18px 28px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .topbar strong {
+            font-size: 19px;
+            background: linear-gradient(90deg, #a78bfa, #60a5fa);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .topbar a { color: #cbd5e1; text-decoration: none; margin-left: 18px; font-size: 14px; }
+        .topbar a:hover { color: white; }
+        .container { max-width: 720px; margin: 48px auto; padding: 0 20px; background: #f8f7ff; }
+        .card { background: white; border-radius: 16px; padding: 28px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); border: 1px solid #eee; }
+        .btn {
+            display: inline-block; background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            color: white; padding: 11px 20px; border-radius: 10px; text-decoration: none;
+            font-size: 14px; font-weight: 600; border: none; cursor: pointer;
+        }
+        form.auth-form input {
+            display: block; width: 100%; padding: 11px 14px; margin-bottom: 14px;
+            border: 1px solid #e0e0e6; border-radius: 10px; font-size: 15px; outline: none;
+        }
+
+        /* ---- app pages (home / thread) ---- */
+        .app-shell { display: flex; min-height: 100vh; background: #131314; color: #e8eaed; }
+        .sidebar { width: 260px; background: #1e1f20; padding: 20px 12px; display: flex; flex-direction: column; border-right: 1px solid #2a2b2c; }
+        .sidebar-brand {
+            font-size: 20px; font-weight: 700; padding: 8px 12px 20px;
+            background: linear-gradient(90deg, #a78bfa, #60a5fa);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .new-chat-btn {
+            display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+            border-radius: 20px; background: #2a2b2c; color: #e8eaed; text-decoration: none;
+            font-size: 14px; margin-bottom: 16px;
+        }
+        .new-chat-btn:hover { background: #333; }
+        .sidebar-section-label { font-size: 11px; color: #9aa0a6; padding: 8px 12px 4px; text-transform: uppercase; letter-spacing: .04em; }
+        .sidebar-threads { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex: 1; }
+        .sidebar-threads li.active { background: #2a2b2c; border-radius: 8px; }
+        .sidebar-thread-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-radius: 8px; }
+        .sidebar-thread-row a { color: #e8eaed; text-decoration: none; font-size: 14px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .sidebar-thread-row:hover { background: #2a2b2c; }
+        .sidebar-thread-row form button { background: none; border: none; color: #9aa0a6; cursor: pointer; font-size: 12px; }
+        .sidebar-thread-row form button:hover { color: #f28b82; }
+        .sidebar-user { padding: 12px; font-size: 13px; color: #9aa0a6; border-top: 1px solid #2a2b2c; margin-top: 8px; }
+        .sidebar-user a { color: #9aa0a6; text-decoration: none; margin-left: 8px; }
+
+        .main-panel { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 24px; overflow-y: auto; }
+        .hero { text-align: center; margin-top: 16vh; width: 100%; }
+        .hero h1 {
+            font-size: 34px; font-weight: 600; margin-bottom: 32px;
+            background: linear-gradient(90deg, #a78bfa, #60a5fa, #f472b6);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .big-input-form, .thread-input-form {
+            width: 100%; max-width: 720px; display: flex; align-items: center; gap: 10px;
+            background: #1e1f20; border: 1px solid #333; border-radius: 28px;
+            padding: 8px 8px 8px 22px; margin: 0 auto;
+        }
+        .big-input-form input, .thread-input-form input {
+            flex: 1; background: transparent; border: none; outline: none;
+            color: #e8eaed; font-size: 16px; padding: 12px 0;
+        }
+        .big-input-form input::placeholder, .thread-input-form input::placeholder { color: #9aa0a6; }
+        .big-input-form button, .thread-input-form button {
+            background: linear-gradient(90deg, #6366f1, #8b5cf6); border: none; color: white;
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 16px;
+        }
+        .thread-panel { width: 100%; max-width: 760px; }
+        .thread-panel h2 { font-weight: 600; margin-bottom: 24px; }
+        .msg { padding: 14px 18px; border-radius: 14px; margin-bottom: 14px; line-height: 1.55; max-width: 82%; font-size: 15px; }
+        .msg.user { background: linear-gradient(90deg, #6366f1, #8b5cf6); color: white; margin-left: auto; border-bottom-right-radius: 4px; }
+        .msg.assistant { background: #2a2b2c; color: #e8eaed; border-bottom-left-radius: 4px; }
+        .msg-label { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; opacity: .65; margin-bottom: 5px; display: block; }
+        .thread-input-form { position: sticky; bottom: 24px; margin-top: 24px; }
+    </style>
+</head>
+<body>
+    {% block full %}
+    <div class="topbar">
+        <strong>MalGPT</strong>
+        <div>
+            {% if user.is_authenticated %}
+                <a href="/">Home</a>
+                <a href="/accounts/logout/">Log out</a>
+            {% else %}
+                <a href="/accounts/login/">Log in</a>
+                <a href="/signup/">Sign up</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    {% endblock %}
+</body>
+</html>

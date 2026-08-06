@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block full %}
+<div class="app-shell">
+    {% include "sidebar.html" with threads=threads active_id=thread.id %}
+    <main class="main-panel">
+        <div class="thread-panel">
+            <h2>{{ thread.title }}</h2>
+            {% for msg in messages %}
+            <div class="msg {{ msg.role }}">
+                <span class="msg-label">{{ msg.role }}</span>
+                {{ msg.content }}
+            </div>
+            {% endfor %}
+            <form method="post" class="thread-input-form">
+                {% csrf_token %}
+                <input type="text" name="message" placeholder="Type your message..." required autofocus>
+                <button type="submit">➤</button>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}

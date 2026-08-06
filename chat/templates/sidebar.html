@@ -1,0 +1,21 @@
+<aside class="sidebar">
+    <div class="sidebar-brand">MalGPT</div>
+    <a href="/" class="new-chat-btn">+ New chat</a>
+    <div class="sidebar-section-label">Recent</div>
+    <ul class="sidebar-threads">
+        {% for t in threads %}
+        <li class="{% if active_id == t.id %}active{% endif %}">
+            <div class="sidebar-thread-row">
+                <a href="/thread/{{ t.id }}/">{{ t.title }}</a>
+                <form method="post" action="/thread/{{ t.id }}/delete/" onsubmit="return confirm('Delete this chat?');">
+                    {% csrf_token %}
+                    <button type="submit">✕</button>
+                </form>
+            </div>
+        </li>
+        {% empty %}
+        <li style="padding:9px 12px;color:#666;font-size:13px;">No chats yet</li>
+        {% endfor %}
+    </ul>
+    <div class="sidebar-user">{{ user.username }} <a href="/accounts/logout/">Log out</a></div>
+</aside>

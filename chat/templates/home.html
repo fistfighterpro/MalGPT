@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block full %}
+<div class="app-shell">
+    {% include "sidebar.html" with threads=threads active_id=None %}
+    <main class="main-panel">
+        <div class="hero">
+            <h1>What's on your mind, {{ user.username }}?</h1>
+            <form method="post" action="/start/" class="big-input-form">
+                {% csrf_token %}
+                <input type="text" name="message" placeholder="Ask MalGPT anything..." required autofocus>
+                <button type="submit">➤</button>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}
