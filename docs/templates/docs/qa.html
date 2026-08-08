@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block full %}
+<div class="app-shell">
+    {% include "sidebar.html" with threads=None active_id=None %}
+    <main class="main-panel">
+        <div class="thread-panel">
+            <a href="/documents/" style="color:#9aa0a6; text-decoration:none; font-size:14px;">← All documents</a>
+            <h2>{{ doc.filename }}</h2>
+
+            {% if question %}
+            <div class="msg user"><span class="msg-label">question</span>{{ question }}</div>
+            <div class="msg assistant"><span class="msg-label">answer</span>{{ answer }}</div>
+            {% endif %}
+
+            <form method="post" class="thread-input-form">
+                {% csrf_token %}
+                <input type="text" name="question" placeholder="Ask something about this document..." required autofocus>
+                <button type="submit">➤</button>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}

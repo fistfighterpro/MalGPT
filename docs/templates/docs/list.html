@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block full %}
+<div class="app-shell">
+    {% include "sidebar.html" with threads=None active_id=None %}
+    <main class="main-panel">
+        <div class="thread-panel">
+            <h2>Your Documents</h2>
+            <form method="post" enctype="multipart/form-data" class="card" style="margin-bottom:24px;">
+                {% csrf_token %}
+                <input type="file" name="file" required style="color:#e8eaed; margin-bottom:16px; display:block;">
+                <button type="submit" class="btn">Upload & Process</button>
+            </form>
+
+            {% for doc in documents %}
+            <div class="msg assistant" style="max-width:100%; display:flex; justify-content:space-between; align-items:center;">
+                <a href="/documents/{{ doc.id }}/" style="color:#e8eaed; text-decoration:none;">{{ doc.filename }}</a>
+                <form method="post" action="/documents/{{ doc.id }}/delete/" onsubmit="return confirm('Delete this document?');">
+                    {% csrf_token %}
+                    <button type="submit" style="background:none;border:none;color:#f28b82;cursor:pointer;">✕</button>
+                </form>
+            </div>
+            {% empty %}
+            <p style="color:#9aa0a6;">No documents uploaded yet.</p>
+            {% endfor %}
+        </div>
+    </main>
+</div>
+{% endblock %}
